@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+		<script>
+		$(function() {
+			var y_min = 590;
+			var y_max = 24;
+
+			var x_min = 0;
+			var x_max = 400;
+
+			$(g).click(function(e) {
+				var x = (e.offsetX - x_min) / (x_max - x_min) * 40;
+				var y = (e.offsetY - y_min) / (y_max - y_min) * 250;
+				console.log(x.toFixed(1), y.toFixed(0));
+			})
+		})
+		</script>
+	</head>
+	<body>
+		<img src="graph.png" id="g" style="cursor: crosshair" />
+	</body>
+</html>
