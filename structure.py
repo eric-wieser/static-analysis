@@ -121,7 +121,7 @@ class Loading(object):
 		unsolved_beams = []
 		for beam in join.beams:
 			if beam in self.tensions:
-				f += beam_dirs[beam] * self.tensions[beam]
+				f -= beam_dirs[beam] * self.tensions[beam]
 			else:
 				unsolved_beams.append(beam)
 
@@ -161,6 +161,6 @@ class Loading(object):
 
 		for b in self.structure.beams:
 			t = self.tensions[b]
-			b.draw_to(ax, text='{}'.format(t), color=color_mapping.to_rgba(t))
+			b.draw_to(ax, text='{:.2f}'.format(t), color=color_mapping.to_rgba(t))
 
 		plt.show()
