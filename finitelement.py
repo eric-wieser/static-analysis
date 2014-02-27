@@ -18,7 +18,6 @@ def test_simple():
 
 	s = Loading(st, {e: [0, -10]})
 	s.plot()
-	print s.tensions
 
 def test_normal():
 	a = Mount("A", [0,  0])
@@ -38,6 +37,5 @@ def test_normal():
 
 	s = Loading(st, {e: [0, -1]})
 	s.plot()
-	print s.tensions
 
-test_simple()
+test_normal()
