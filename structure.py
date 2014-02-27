@@ -10,6 +10,9 @@ class Joint(object):
 	def __repr__(self):
 		return "{s.__class__.__name__}({s.name!r}, {s.pos!r})".format(s=self)
 
+	def draw_to(self, axis):
+		axis.text(*self.pos, s=self.name)
+
 class Mount(Joint):
 	pass
 
@@ -162,5 +165,8 @@ class Loading(object):
 		for b in self.structure.beams:
 			t = self.tensions[b]
 			b.draw_to(ax, text='{:.2f}'.format(t), color=color_mapping.to_rgba(t))
+
+		for j in self.structure.joints:
+			j.draw_to(ax)
 
 		plt.show()
