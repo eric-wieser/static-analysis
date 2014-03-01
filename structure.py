@@ -1,5 +1,21 @@
 import numpy as np
+import scipy.stats
 from collections import deque
+
+def axisEqual3D(ax):
+	ax.set_aspect("equal")
+	extents = np.array([getattr(ax, 'get_{}lim'.format(dim))() for dim in 'xyz'])
+	sz = extents[:,1] - extents[:,0]
+	# centers = np.mean(extents, axis=1)
+	# maxsize = max(abs(sz))
+	# r = maxsize/2
+	# for ctr, dim in zip(centers, 'xyz'):
+	# 	getattr(ax, 'set_{}lim'.format(dim))(ctr - r, ctr + r)
+
+	s = scipy.stats.mstats.gmean(sz)
+	ax.pbaspect = sz / s
+
+	print ax.pbaspect
 
 class Joint(object):
 	def __init__(self, name, pos):
@@ -35,6 +51,10 @@ class Beam(object):
 		)
 		if text is not None:
 			axis.text(*(self.a.pos + self.b.pos) / 2, s=text)
+
+	@property
+	def length(self):
+		return np.linalg.norm(self.b.pos - self.a.pos)
 
 class StructureGeometry(object):
 	def _walk(self, component):
@@ -75,10 +95,20 @@ class StructureGeometry(object):
 
 
 		fig = plt.figure()
-		ax = fig.add_subplot(1, 1, 1)
+		if self.dimensions == 3:
+			ax = fig.add_subplot(1, 1, 1, projection='3d')
+		else:
+			ax = fig.add_subplot(1, 1, 1)
+			ax.axis('equal')
 
 		for b in self.beams:
 			b.draw_to(ax)
+
+		for j in self.joints:
+			j.draw_to(ax)
+
+		if self.dimensions == 3:
+			axisEqual3D(ax)
 
 		plt.show()
 
@@ -158,8 +188,11 @@ class Loading(object):
 
 
 		fig = plt.figure()
-		ax = fig.add_subplot(1, 1, 1)
-		ax.axis('equal')
+		if self.structure.dimensions == 3:
+			ax = fig.add_subplot(1, 1, 1, projection='3d')
+		else:
+			ax = fig.add_subplot(1, 1, 1)
+			ax.axis('equal')
 		ax.grid()
 
 		for b in self.structure.beams:
@@ -168,5 +201,8 @@ class Loading(object):
 
 		for j in self.structure.joints:
 			j.draw_to(ax)
+
+		if self.structure.dimensions == 3:
+			axisEqual3D(ax)
 
 		plt.show()
