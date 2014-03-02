@@ -6,16 +6,16 @@ def axisEqual3D(ax):
 	ax.set_aspect("equal")
 	extents = np.array([getattr(ax, 'get_{}lim'.format(dim))() for dim in 'xyz'])
 	sz = extents[:,1] - extents[:,0]
-	# centers = np.mean(extents, axis=1)
-	# maxsize = max(abs(sz))
-	# r = maxsize/2
-	# for ctr, dim in zip(centers, 'xyz'):
-	# 	getattr(ax, 'set_{}lim'.format(dim))(ctr - r, ctr + r)
+	centers = np.mean(extents, axis=1)
+	maxsize = max(abs(sz))
+	r = maxsize/2
+	for ctr, dim in zip(centers, 'xyz'):
+		getattr(ax, 'set_{}lim'.format(dim))(ctr - r, ctr + r)
 
-	s = scipy.stats.mstats.gmean(sz)
-	ax.pbaspect = sz / s
+	# s = scipy.stats.mstats.gmean(sz)
+	# ax.pbaspect = sz / s
 
-	print ax.pbaspect
+	# print ax.pbaspect
 
 class Joint(object):
 	def __init__(self, name, pos):
@@ -87,6 +87,14 @@ class StructureGeometry(object):
 		self.dimensions = None
 
 		self._walk(component)
+
+
+	def __getitem__(self, x):
+		if len(x) == 2:
+			x = set(x)
+			return next(b for b in self.beams if set([b.a.name, b.b.name]) == x)
+		else:
+			return next(j for j in self.joints if j.name == x)
 
 
 	def plot(self):
@@ -197,7 +205,7 @@ class Loading(object):
 
 		for b in self.structure.beams:
 			t = self.tensions[b]
-			b.draw_to(ax, text='{:.2f}'.format(t), color=color_mapping.to_rgba(t))
+			b.draw_to(ax, text='{:.0f}'.format(t), color=color_mapping.to_rgba(t))
 
 		for j in self.structure.joints:
 			j.draw_to(ax)

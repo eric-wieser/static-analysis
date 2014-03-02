@@ -1,14 +1,14 @@
 from collections import namedtuple
 import numpy as np
-BeamCrossSection = namedtuple('BeamCrossSection', 'b t area cost color')
+BeamCrossSection = namedtuple('BeamCrossSection', 'b t area linear_density color')
 
 beams = {
-	"1": BeamCrossSection(b=9.5,  t=1.6, area=27.7, cost=76,  color=np.r_[1, 0, 0]),
-	"2": BeamCrossSection(b=12.5, t=1.6, area=37.6, cost=102, color=np.r_[1, 1, 0]),
-	"3": BeamCrossSection(b=15.9, t=1.6, area=46.9, cost=127, color=np.r_[0, 1, 0]),
-	"4": BeamCrossSection(b=16,   t=2,   area=58.7, cost=159, color=np.r_[0, 1, 1]),
-	"5": BeamCrossSection(b=19.5, t=2,   area=73.2, cost=199, color=np.r_[0, 0, 1]),
-	"6": BeamCrossSection(b=22,   t=3,   area=123,  cost=333, color=np.r_[1, 0, 1])
+	"1": BeamCrossSection(b=9.5,  t=1.6, area=27.7, linear_density=.076,  color=np.r_[1, 0, 0]),
+	"2": BeamCrossSection(b=12.5, t=1.6, area=37.6, linear_density=.102, color=np.r_[1, 1, 0]),
+	"3": BeamCrossSection(b=15.9, t=1.6, area=46.9, linear_density=.127, color=np.r_[0, 1, 0]),
+	"4": BeamCrossSection(b=16,   t=2,   area=58.7, linear_density=.159, color=np.r_[0, 1, 1]),
+	"5": BeamCrossSection(b=19.5, t=2,   area=73.2, linear_density=.199, color=np.r_[0, 0, 1]),
+	"6": BeamCrossSection(b=22,   t=3,   area=123,  linear_density=.333, color=np.r_[1, 0, 1])
 }
 
 modes = {
@@ -46,17 +46,17 @@ modes = {
 		(39.0, 40)
 	],
 
-	"C": [
-		(0.0, 255),
-		(6.1, 255),
-		(25.0, 182),
-		(26.2, 163),
-		(28.5, 135),
-		(31.4, 110),
-		(34.5, 91),
-		(37.0, 80),
-		(39.0, 72)
-	]
+	# "C": [
+	# 	(0.0, 255),
+	# 	(6.1, 255),
+	# 	(25.0, 182),
+	# 	(26.2, 163),
+	# 	(28.5, 135),
+	# 	(31.4, 110),
+	# 	(34.5, 91),
+	# 	(37.0, 80),
+	# 	(39.0, 72)
+	# ]
 }
 
 def is_below(xs, ys, x, y):
@@ -76,17 +76,20 @@ def valid_sections(length, force):
 			forces = np.array(stresses) * beam.area
 			lengths = np.array(l_over_bs) * beam.b
 
-			cost = beam.cost
+			cost = beam.linear_density
 
 			if mname in ('B', 'C'):
 				forces *= 2
 				cost *= 2
 
 			if is_below(lengths, forces, length, force):
-				yield bname + mname, cost
+				yield bname + mname, cost * 500
 
 def best_section(length, force):
-	return min(valid_sections(length, force), key=lambda x: x[1])
+	try:
+		return min(valid_sections(length, force), key=lambda x: x[1])
+	except:
+		raise ValueError("No beam of length {} can take force {}".format(length, force))
 
 def plot():
 	import matplotlib.pyplot as plt
@@ -116,3 +119,16 @@ def plot():
 	ax1.set_ylabel('Force / N')
 
 	plt.show()
+
+if __name__ == '__main__':
+	D = 3.2
+	yield_stress = 255
+	for name, beam in sorted(beams.iteritems()):
+
+		effective_area = beam.area - D*beam.t - 0.5 * beam.b * beam.t
+		t_max = effective_area * yield_stress
+
+		print name, t_max
+
+
+	plot()
