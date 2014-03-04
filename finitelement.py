@@ -102,7 +102,7 @@ def test_normal3D():
 	d_pos = np.dot(matrix, st['D'].pos)
 	e_pos = np.dot(matrix, st['E'].pos)
 
-	offset = np.array([0, 80, 0])
+	offset = np.array([0, 57.5, 0])
 
 	a = Mount("A", a_pos + offset)
 	b = Mount("B", b_pos + offset)
