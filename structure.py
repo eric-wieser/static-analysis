@@ -181,6 +181,11 @@ class Loading(object):
 		if len(unsolved_beams) > self.structure.dimensions:
 			return False
 
+		elif len(unsolved_beams) == 1:
+			b = unsolved_beams[0]
+			self.tensions[b] = beam_dirs[b].dot(f)
+
+			return True
 
 		# build a matrix with the columns as unsolved beam directions
 		unsolved_dirs = [
@@ -193,7 +198,11 @@ class Loading(object):
 		unsolved_dir_matrix = np.array(unsolved_dirs).T
 
 		# solve
-		forces = np.linalg.solve(unsolved_dir_matrix, f)
+		try:
+			forces = np.linalg.solve(unsolved_dir_matrix, f)
+		except np.linalg.LinAlgError:
+			# underconstrained
+			return False
 
 		for beam, force in zip(unsolved_beams, forces):
 			self.tensions[beam] = force
