@@ -172,9 +172,14 @@ class Loading(object):
 
 
 		# build a matrix with the columns as unsolved beam directions
-		unsolved_dir_matrix = np.array([
+		unsolved_dirs = [
 			beam_dirs[b] for b in unsolved_beams
-		]).T
+		]
+		if len(unsolved_dirs) == 2 and self.structure.dimensions == 3:
+			a, b = unsolved_dirs
+			unsolved_dirs.append(np.cross(a, b))
+
+		unsolved_dir_matrix = np.array(unsolved_dirs).T
 
 		# solve
 		forces = np.linalg.solve(unsolved_dir_matrix, f)
