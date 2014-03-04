@@ -154,9 +154,10 @@ class Loading(object):
 			if fail_count > len(to_solve):
 				raise NotStaticallyDeterminate()
 
-	def _solve(self, join, f):
+	def _solve(self, joint, f):
+		"""Attempt to resolve forces at a single joint, if possible"""
 		# nothing to resolve at mounts
-		if isinstance(join, Mount):
+		if isinstance(joint, Mount):
 			return True
 
 		f = np.asarray(f)
@@ -169,18 +170,19 @@ class Loading(object):
 			else:
 				beam_dirs[beam] = beam.direction
 
-		# Find unconstrained beams
+		# find unconstrained beams
 		unsolved_beams = []
-		for beam in join.beams:
+		for beam in joint.beams:
 			if beam in self.tensions:
 				f -= beam_dirs[beam] * self.tensions[beam]
 			else:
 				unsolved_beams.append(beam)
 
-		# not enough info to solve
+		# not enough constraints solved
 		if len(unsolved_beams) > self.structure.dimensions:
 			return False
 
+		# underconstrained - take axial component of load
 		elif len(unsolved_beams) == 1:
 			b = unsolved_beams[0]
 			self.tensions[b] = beam_dirs[b].dot(f)
@@ -191,6 +193,8 @@ class Loading(object):
 		unsolved_dirs = [
 			beam_dirs[b] for b in unsolved_beams
 		]
+
+		# underconstrained - take components of load within the plane
 		if len(unsolved_dirs) == 2 and self.structure.dimensions == 3:
 			a, b = unsolved_dirs
 			unsolved_dirs.append(np.cross(a, b))
