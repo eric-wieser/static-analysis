@@ -18,6 +18,7 @@ def axisEqual3D(ax):
 	# print ax.pbaspect
 
 class Joint(object):
+	"""A pin joint"""
 	def __init__(self, name, pos):
 		self.name = name
 		self.pos = np.asarray(pos)
@@ -30,9 +31,11 @@ class Joint(object):
 		axis.text(*self.pos, s=self.name)
 
 class Mount(Joint):
+	"""A joint at which an arbitrary external reaction force is applied"""
 	pass
 
 class Beam(object):
+	"""A connection between two joints"""
 	def __init__(self, a, b):
 		self.a = a
 		self.b = b
@@ -57,6 +60,7 @@ class Beam(object):
 		return np.linalg.norm(self.b.pos - self.a.pos)
 
 class StructureGeometry(object):
+	"""A collections of Beams and joints"""
 	def _walk(self, component):
 		"""Find all connected components"""
 
@@ -121,9 +125,11 @@ class StructureGeometry(object):
 		plt.show()
 
 class NotStaticallyDeterminate(Exception):
+	"""Indicates that the structure cannot be analyzed solely by pin-jointed analysis"""
 	pass
 
 class Loading(object):
+	"""A loading configuration of a structure"""
 	def __init__(self, st, forces):
 		self.structure = st
 		self.tensions = {}
