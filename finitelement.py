@@ -126,34 +126,34 @@ def test_normal3D():
 	Beam(e, f)
 	Beam(e_, f)
 
-	ac = Beam(a, c)
-	bc = Beam(b, c)
-	bd = Beam(b, d)
-	cd = Beam(c, d)
-	ce = Beam(c, e)
-	de = Beam(d, e)
+	Beam(a, c)
+	Beam(b, c)
+	Beam(b, d)
+	Beam(c, d)
+	Beam(c, e)
+	Beam(d, e)
 
-	a_c_ = Beam(a_, c_)
-	b_c_ = Beam(b_, c_)
-	b_d_ = Beam(b_, d_)
-	c_d_ = Beam(c_, d_)
-	c_e_ = Beam(c_, e_)
-	d_e_ = Beam(d_, e_)
+	Beam(a_, c_)
+	Beam(b_, c_)
+	Beam(b_, d_)
+	Beam(c_, d_)
+	Beam(c_, e_)
+	Beam(d_, e_)
 
 	Beam(c, e_)
 	Beam(a, c_)
 	Beam(b, d_)
 
 	st = Truss(a)
+	display(st)
 
 	from pprint import pprint
-	pprint(st.joints)
+	for b in st.beams:
+		print b, b.length
 
-	display(st)
 
 	l = Loading(st, {f: [0, 0, -2000]})
 	show_cost(l)
-
 	display(l)
 
 
@@ -161,13 +161,9 @@ def test_ridiculous3D():
 	a = Mount("A", [0,    80, 0])
 	a_ = Mount("A'", [0,   -80, 0])
 	b = Mount("B", [0,    0, 254])
-
-
 	c =  Joint("C", [400,    80, 254])
 	c_ = Joint("C'", [400,    -80, 254])
-
 	d = Joint("D", [400,    0, 0])
-
 	e = Joint("E", [800,    0, 0])
 
 	Beam(a, c)
@@ -175,8 +171,6 @@ def test_ridiculous3D():
 	Beam(b, c)
 	Beam(b, c_)
 	# Beam(c, c_)
-
-
 	Beam(a, d)
 	Beam(a_, d)
 	Beam(c, d)
@@ -185,39 +179,11 @@ def test_ridiculous3D():
 	Beam(c, e)
 	Beam(c_, e)
 
-
-	# a_ = Mount("A'", [0,   -80, 0])
-	# b_ = Mount("B'", [0,   -80, 254])
-	# c_ = Joint("C'", [407, 163.5, 0])
-	# d_ = Joint("D'", [407, 163.5, 200])
-
-	# ac = Beam(a, c)
-	# bc = Beam(b, c)
-	# bd = Beam(b, d)
-	# cd = Beam(c, d)
-	# ce = Beam(c, e)
-	# de = Beam(d, e)
-
-	# a_c_ = Beam(a_, c_)
-	# b_c_ = Beam(b_, c_)
-	# b_d_ = Beam(b_, d_)
-	# c_d_ = Beam(c_, d_)
-	# c_e = Beam(c_, e)
-	# d_e = Beam(d_, e)
-
-	# d_d = Beam(d_, d)
-	# c_c = Beam(c_, c)
-
-	# ac_ = Beam(a, c_)
-	# bd_ = Beam(b, d_)
-
 	st = Truss(a)
-
 	display(st)
 
-	l = Loading(st, {e: [0, 0, -1000]})
+	l = Loading(st, {e: [0, 0, -2000]})
 	show_cost(l)
-
 	display(l)
 
 def optimize_normal():
@@ -277,5 +243,3 @@ def optimize_normal():
 
 
 test_normal3D()
-# optimize_normal()
-#test_normal()
