@@ -102,23 +102,29 @@ def test_normal3D():
 	d_pos = np.dot(matrix, st['D'].pos)
 	e_pos = np.dot(matrix, st['E'].pos)
 
-	offset = np.array([0, 57.5, 0])
+	y_offset = np.array([0, 57.5, 0])
+	z_offset = np.array([0, 0, -57.5])
 
-	a = Mount("A", a_pos + offset)
-	b = Mount("B", b_pos + offset)
-	c = Joint("C", c_pos + offset)
-	d = Joint("D", d_pos + offset)
-	e = Joint("E", e_pos + offset)
+	a = Mount("A", a_pos + y_offset)
+	b = Mount("B", b_pos + y_offset)
+	c = Joint("C", c_pos + y_offset)
+	d = Joint("D", d_pos + y_offset)
+	e = Joint("E", e_pos + y_offset)
 
-	a_ = Mount("A'", a_pos - offset)
-	b_ = Mount("B'", b_pos - offset)
-	c_ = Joint("C'", c_pos - offset)
-	d_ = Joint("D'", d_pos - offset)
-	e_ = Joint("E'", e_pos - offset)
+	a_ = Mount("A'", a_pos - y_offset)
+	b_ = Mount("B'", b_pos - y_offset)
+	c_ = Joint("C'", c_pos - y_offset)
+	d_ = Joint("D'", d_pos - y_offset)
+	e_ = Joint("E'", e_pos - y_offset)
+
+	f = Joint("F", e_pos + z_offset)
 
 	Beam(c, c_)
 	Beam(d, d_)
 	Beam(e, e_)
+
+	Beam(e, f)
+	Beam(e_, f)
 
 	ac = Beam(a, c)
 	bc = Beam(b, c)
@@ -134,7 +140,6 @@ def test_normal3D():
 	c_e_ = Beam(c_, e_)
 	d_e_ = Beam(d_, e_)
 
-
 	Beam(c, e_)
 	Beam(a, c_)
 	Beam(b, d_)
@@ -146,7 +151,7 @@ def test_normal3D():
 
 	display(st)
 
-	l = Loading(st, {e: [0, 0, -1000], e_: [0, 0, -1000]})
+	l = Loading(st, {f: [0, 0, -2000]})
 	show_cost(l)
 
 	display(l)
