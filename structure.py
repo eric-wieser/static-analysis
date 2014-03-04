@@ -59,6 +59,12 @@ class Beam(object):
 	def length(self):
 		return np.linalg.norm(self.b.pos - self.a.pos)
 
+	@property
+	def direction(self):
+		"""The unit vector pointing from a to b"""
+		return (self.b.pos - self.a.pos) / self.length
+
+
 class StructureGeometry(object):
 	"""A collections of Beams and joints"""
 	def _walk(self, component):
@@ -155,15 +161,13 @@ class Loading(object):
 
 		f = np.asarray(f)
 
-		# find normal vectors for beams
+		# calculate direction vectors for beams
 		beam_dirs = {}
-		for beam in join.beams:
-			if join == beam.a:
-				d = join.pos - beam.b.pos
+		for beam in joint.beams:
+			if joint == beam.a:
+				beam_dirs[beam] = -beam.direction
 			else:
-				d = join.pos - beam.a.pos
-
-			beam_dirs[beam] = d / np.linalg.norm(d)
+				beam_dirs[beam] = beam.direction
 
 		# Find unconstrained beams
 		unsolved_beams = []
