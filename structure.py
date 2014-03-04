@@ -67,6 +67,14 @@ class Beam(object):
 
 class StructureGeometry(object):
 	"""A collections of Beams and joints"""
+	def __init__(self, component):
+		self.beams = set()
+		self.joints = set()
+
+		self.dimensions = None
+
+		self._walk(component)
+
 	def _walk(self, component):
 		"""Find all connected components"""
 
@@ -89,14 +97,6 @@ class StructureGeometry(object):
 
 		else:
 			raise ValueError("Unexpected component {!r}".format(component))
-
-	def __init__(self, component):
-		self.beams = set()
-		self.joints = set()
-
-		self.dimensions = None
-
-		self._walk(component)
 
 
 	def __getitem__(self, x):
