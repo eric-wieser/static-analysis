@@ -2,20 +2,6 @@ import numpy as np
 import scipy.stats
 from collections import deque
 
-def axisEqual3D(ax):
-	ax.set_aspect("equal")
-	extents = np.array([getattr(ax, 'get_{}lim'.format(dim))() for dim in 'xyz'])
-	sz = extents[:,1] - extents[:,0]
-	centers = np.mean(extents, axis=1)
-	maxsize = max(abs(sz))
-	r = maxsize/2
-	for ctr, dim in zip(centers, 'xyz'):
-		getattr(ax, 'set_{}lim'.format(dim))(ctr - r, ctr + r)
-
-	# s = scipy.stats.mstats.gmean(sz)
-	# ax.pbaspect = sz / s
-
-	# print ax.pbaspect
 
 class Joint(object):
 	"""A pin joint"""
@@ -26,9 +12,6 @@ class Joint(object):
 
 	def __repr__(self):
 		return "{s.__class__.__name__}({s.name!r}, {s.pos!r})".format(s=self)
-
-	def draw_to(self, axis):
-		axis.text(*self.pos, s=self.name)
 
 class Mount(Joint):
 	"""A joint at which an arbitrary external reaction force is applied"""
@@ -45,15 +28,6 @@ class Beam(object):
 
 	def __repr__(self):
 		return "<Beam {s.a.name}-{s.b.name}>".format(s=self)
-		# return "Beam({s.a}, {s.b})".format(s=self)
-
-	def draw_to(self, axis, color='r', text=None):
-		axis.plot(
-			*zip(self.a.pos, self.b.pos),
-			color=color
-		)
-		if text is not None:
-			axis.text(*(self.a.pos + self.b.pos) / 2, s=text)
 
 	@property
 	def length(self):
@@ -107,29 +81,6 @@ class StructureGeometry(object):
 		else:
 			return next(j for j in self.joints if j.name == x)
 
-
-	def plot(self):
-		import matplotlib.pyplot as plt
-		from mpl_toolkits.mplot3d import Axes3D
-
-
-		fig = plt.figure()
-		if self.dimensions == 3:
-			ax = fig.add_subplot(1, 1, 1, projection='3d')
-		else:
-			ax = fig.add_subplot(1, 1, 1)
-			ax.axis('equal')
-
-		for b in self.beams:
-			b.draw_to(ax)
-
-		for j in self.joints:
-			j.draw_to(ax)
-
-		if self.dimensions == 3:
-			axisEqual3D(ax)
-
-		plt.show()
 
 class NotStaticallyDeterminate(Exception):
 	"""Indicates that the structure cannot be analyzed solely by pin-jointed analysis"""
@@ -212,34 +163,3 @@ class Loading(object):
 			self.tensions[beam] = force
 
 		return True
-
-	def plot(self):
-		import matplotlib.pyplot as plt
-		from mpl_toolkits.mplot3d import Axes3D
-
-		import matplotlib as mpl
-		import matplotlib.cm as cm
-
-		limit = max(abs(t) for t in self.tensions.values())
-		color_mapping = cm.ScalarMappable(norm=mpl.colors.Normalize(vmin=-limit, vmax=limit), cmap=mpl.cm.RdYlGn)
-
-
-		fig = plt.figure()
-		if self.structure.dimensions == 3:
-			ax = fig.add_subplot(1, 1, 1, projection='3d')
-		else:
-			ax = fig.add_subplot(1, 1, 1)
-			ax.axis('equal')
-		ax.grid()
-
-		for b in self.structure.beams:
-			t = self.tensions[b]
-			b.draw_to(ax, text='{:.0f}'.format(t), color=color_mapping.to_rgba(t))
-
-		for j in self.structure.joints:
-			j.draw_to(ax)
-
-		if self.structure.dimensions == 3:
-			axisEqual3D(ax)
-
-		plt.show()

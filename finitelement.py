@@ -2,6 +2,7 @@ import itertools
 import math
 
 from structure import Joint, Mount, Beam, StructureGeometry, Loading
+from renderer import MPLRenderer as display
 
 import sections
 
@@ -55,7 +56,7 @@ def test_simple():
 	st = StructureGeometry(a)
 
 	s = Loading(st, {e: [0, -10]})
-	s.plot()
+	display(s)
 
 def make_half():
 	a = Mount('A', np.array([   0.,    0.]))
@@ -80,7 +81,7 @@ def test_normal():
 	l = Loading(st, {st['E']: [0, -1000]})
 	show_cost(l)
 
-	l.plot()
+	display(l)
 
 
 def test_normal3D():
@@ -143,12 +144,12 @@ def test_normal3D():
 	from pprint import pprint
 	pprint(st.joints)
 
-	st.plot()
+	display(st)
 
 	l = Loading(st, {e: [0, 0, -1000], e_: [0, 0, -1000]})
 	show_cost(l)
 
-	l.plot()
+	display(l)
 
 
 def test_ridiculous3D():
@@ -209,12 +210,12 @@ def test_ridiculous3D():
 
 	st = StructureGeometry(a)
 
-	st.plot()
+	display(st)
 
 	l = Loading(st, {e: [0, 0, -1000]})
 	show_cost(l)
 
-	l.plot()
+	display(l)
 
 def optimize_normal():
 	a = Mount('A', array([   0.,    0.]))
@@ -269,7 +270,7 @@ def optimize_normal():
 	s = Loading(st, load)
 
 	show_cost(s)
-	s.plot()
+	display(s)
 
 
 test_normal3D()
