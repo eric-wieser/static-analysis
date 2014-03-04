@@ -14,7 +14,7 @@ class MPLRenderer(object):
 	def __init__(self, obj):
 		if isinstance(obj, structure.Loading):
 			self._draw_loading(obj)
-		elif isinstance(obj, structure.StructureGeometry):
+		elif isinstance(obj, structure.Truss):
 			self._draw_structure(obj)
 
 	@staticmethod

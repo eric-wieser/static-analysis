@@ -1,7 +1,7 @@
 import itertools
 import math
 
-from structure import Joint, Mount, Beam, StructureGeometry, Loading
+from structure import Joint, Mount, Beam, Truss, Loading
 from renderer import MPLRenderer as display
 
 import sections
@@ -53,7 +53,7 @@ def test_simple():
 	ce = Beam(c, e)
 	de = Beam(d, e)
 
-	st = StructureGeometry(a)
+	st = Truss(a)
 
 	s = Loading(st, {e: [0, -10]})
 	display(s)
@@ -72,7 +72,7 @@ def make_half():
 	ce = Beam(c, e)
 	de = Beam(d, e)
 
-	return StructureGeometry(a)
+	return Truss(a)
 
 
 def test_normal():
@@ -144,7 +144,7 @@ def test_normal3D():
 	Beam(a, c_)
 	Beam(b, d_)
 
-	st = StructureGeometry(a)
+	st = Truss(a)
 
 	from pprint import pprint
 	pprint(st.joints)
@@ -158,8 +158,6 @@ def test_normal3D():
 
 
 def test_ridiculous3D():
-
-
 	a = Mount("A", [0,    80, 0])
 	a_ = Mount("A'", [0,   -80, 0])
 	b = Mount("B", [0,    0, 254])
@@ -213,7 +211,7 @@ def test_ridiculous3D():
 	# ac_ = Beam(a, c_)
 	# bd_ = Beam(b, d_)
 
-	st = StructureGeometry(a)
+	st = Truss(a)
 
 	display(st)
 
@@ -236,7 +234,7 @@ def optimize_normal():
 	ce = Beam(c, e)
 	de = Beam(d, e)
 
-	st = StructureGeometry(a)
+	st = Truss(a)
 
 	load = {e: [0, -1000]}
 

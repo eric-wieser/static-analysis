@@ -39,7 +39,7 @@ class Beam(object):
 		return (self.b.pos - self.a.pos) / self.length
 
 
-class StructureGeometry(object):
+class Truss(object):
 	"""A collections of Beams and joints"""
 	def __init__(self, component):
 		self.beams = set()
