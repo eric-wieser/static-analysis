@@ -94,7 +94,8 @@ class StructureGeometry(object):
 
 
 	def __getitem__(self, x):
-		if len(x) == 2:
+		"""Access components by name"""
+		if isinstance(x, tuple):
 			x = set(x)
 			return next(b for b in self.beams if set([b.a.name, b.b.name]) == x)
 		else:
