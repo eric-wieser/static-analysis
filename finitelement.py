@@ -187,11 +187,11 @@ def test_ridiculous3D():
 	display(l)
 
 def optimize_normal():
-	a = Mount('A', array([   0.,    0.]))
-	b = Mount('B', array([   0.,  254.]))
-	c = Joint('C', array([ 451.,    0.]))
-	d = Joint('D', array([ 612.,  197.]))
-	e = Joint('E', array([ 910.,    0.]))
+	a = Mount('A', np.array([   0.,    0.]))
+	b = Mount('B', np.array([   0.,  254.]))
+	c = Joint('C', np.array([ 451.,    0.]))
+	d = Joint('D', np.array([ 612.,  197.]))
+	e = Joint('E', np.array([ 910.,    0.]))
 
 	ac = Beam(a, c)
 	bc = Beam(b, c)
