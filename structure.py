@@ -117,15 +117,15 @@ class Loading(object):
 		beam_dirs = {}
 		for beam in joint.beams:
 			if joint == beam.a:
-				beam_dirs[beam] = -beam.direction
-			else:
 				beam_dirs[beam] = beam.direction
+			else:
+				beam_dirs[beam] = -beam.direction
 
 		# find unconstrained beams
 		unsolved_beams = []
 		for beam in joint.beams:
 			if beam in self.tensions:
-				f -= beam_dirs[beam] * self.tensions[beam]
+				f += beam_dirs[beam] * self.tensions[beam]
 			else:
 				unsolved_beams.append(beam)
 
@@ -154,12 +154,12 @@ class Loading(object):
 
 		# solve
 		try:
-			forces = np.linalg.solve(unsolved_dir_matrix, f)
+			tensions = -np.linalg.solve(unsolved_dir_matrix, f)
 		except np.linalg.LinAlgError:
 			# underconstrained
 			return False
 
-		for beam, force in zip(unsolved_beams, forces):
-			self.tensions[beam] = force
+		for beam, tension in zip(unsolved_beams, tensions):
+			self.tensions[beam] = tension
 
 		return True
