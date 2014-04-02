@@ -59,6 +59,34 @@ modes = {
 	# ]
 }
 
+
+beam_graphs = {}
+
+for mname, mode in modes.iteritems():
+	for bname, beam in beams.iteritems():
+		l_over_bs, stresses = zip(*mode)
+
+		forces = np.array(stresses) * beam.area
+		lengths = np.array(l_over_bs) * beam.b
+
+		cost = beam.linear_density * 500
+
+		if mname == 'A':
+			c = beam.color * 0.75
+		elif mname == 'B':
+			c = beam.color * 0.5
+			forces *= 2
+			cost *= 2
+		elif mname == 'C':
+			c = beam.color * 0.5 + 0.2
+			forces *= 2
+			cost *= 2
+
+		beam_graphs[bname + mname] = dict(
+			cost=cost, forces=forces, lengths=lengths, color=np.clip(c, 0, 1)
+		)
+
+
 def is_below(xs, ys, x, y):
 	for xa, xb, ya, yb in zip(xs[:-1], xs[1:], ys[:-1], ys[1:]):
 		if xa < x < xb:
@@ -90,45 +118,3 @@ def best_section(length, force):
 		return min(valid_sections(length, force), key=lambda x: x[1])
 	except:
 		raise ValueError("No beam of length {} can take force {}".format(length, force))
-
-def plot():
-	import matplotlib.pyplot as plt
-
-	fig = plt.figure()
-	ax1 = fig.add_subplot(1, 1, 1)
-
-	for mname, mode in modes.iteritems():
-		for bname, beam in beams.iteritems():
-			l_over_bs, stresses = zip(*mode)
-
-			forces = np.array(stresses) * beam.area
-			lengths = np.array(l_over_bs) * beam.b
-
-			if mname == 'A':
-				c = beam.color * 0.5 - 0.2
-			elif mname == 'B':
-				c = beam.color * 0.5
-				forces *= 2
-			elif mname == 'C':
-				c = beam.color * 0.5 + 0.2
-				forces *= 2
-			ax1.plot(lengths, forces, color=np.clip(c, 0, 1))
-
-	ax1.grid()
-	ax1.set_xlabel('Length / mm')
-	ax1.set_ylabel('Force / N')
-
-	plt.show()
-
-if __name__ == '__main__':
-	D = 3.2
-	yield_stress = 255
-	for name, beam in sorted(beams.iteritems()):
-
-		effective_area = beam.area - D*beam.t - 0.5 * beam.b * beam.t
-		t_max = effective_area * yield_stress
-
-		print name, t_max
-
-
-	plot()
