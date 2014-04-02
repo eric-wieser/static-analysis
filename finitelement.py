@@ -23,6 +23,28 @@ def show_cost(loading):
 
 	print "Cost:", c_cost
 
+	import materialplots
+
+	ax = materialplots.plot_areas(alpha=0.1)
+
+	for beam, tension in loading.tensions.iteritems():
+		if tension < 0 and not np.isclose(tension, 0) and "'" not in beam.a.name:
+			print tension
+			ax.plot(beam.length, -tension, 'x', color='black')
+			ax.annotate(
+				beam.a.name + beam.b.name,
+				xy=(beam.length, -tension),
+				textcoords='offset points',
+				xytext=(10, 0),
+				color='black',
+				va='center',
+				ha='left',
+				fontsize=11
+			)
+
+	ax.figure.savefig('beams.png')
+
+
 def get_cost(loading):
 	c_cost = 0
 	for beam, tension in loading.tensions.iteritems():
