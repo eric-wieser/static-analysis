@@ -1,7 +1,7 @@
 import itertools
 import math
 
-from structure import Joint, Mount, Beam, Truss, Loading
+from structure import Joint, Mount, Beam, Truss, Loading, NotStaticallyDeterminate
 from renderer import MPLRenderer as display
 
 import sections
@@ -241,16 +241,17 @@ def optimize_normal():
 		c.pos = c_pos
 		try:
 			s = Loading(st, load)
-			max_f = get_cost(s) #sum(t*t for t in s.tensions.values())
-
-			if max_f < best_f:
-				best_f = max_f
-				best = [(d_pos, c_pos)]
-			elif max_f == best_f:
-				best_f = max_f
-				best.append((d_pos, c_pos))
-		except np.linalg.linalg.LinAlgError:
+		except NotStaticallyDeterminate:
 			pass
+
+		max_f = get_cost(s)
+
+		if max_f < best_f:
+			best_f = max_f
+			best = [(d_pos, c_pos)]
+		elif max_f == best_f:
+			best_f = max_f
+			best.append((d_pos, c_pos))
 
 	print best[:10]
 
