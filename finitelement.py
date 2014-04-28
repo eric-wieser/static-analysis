@@ -25,13 +25,14 @@ def show_cost(loading):
 
 	import materialplots
 
-	ax = materialplots.plot_areas(alpha=0.1)
+	axc = materialplots.plot_areas(alpha=0.1)
+	axt = materialplots.plot_stupid_areas(alpha=0.1)
 
 	for beam, tension in loading.tensions.iteritems():
 		if tension < 0 and not np.isclose(tension, 0) and "'" not in beam.a.name:
 			print tension
-			ax.plot(beam.length, -tension, 'x', color='black')
-			ax.annotate(
+			axc.plot(beam.length, -tension, 'x', color='black')
+			axc.annotate(
 				beam.a.name + beam.b.name,
 				xy=(beam.length, -tension),
 				textcoords='offset points',
@@ -41,9 +42,21 @@ def show_cost(loading):
 				ha='left',
 				fontsize=11
 			)
+		elif tension > 0 and not np.isclose(tension, 0) and "'" not in beam.a.name:
+			axt.plot(beam.length, tension, 'x', color='black')
+			axt.annotate(
+				beam.a.name + beam.b.name,
+				xy=(beam.length, tension),
+				textcoords='offset points',
+				xytext=(10, 0),
+				color='black',
+				va='center',
+				ha='left',
+				fontsize=11
+			)
 
-	ax.figure.savefig('beams.png')
-
+	axc.figure.savefig('beams.png')
+	axt.figure.savefig('dumbbeams.png')
 
 def get_cost(loading):
 	c_cost = 0
@@ -76,6 +89,7 @@ def test_simple():
 	de = Beam(d, e)
 
 	st = Truss(a)
+	display(st)
 
 	s = Loading(st, {e: [0, -10]})
 	display(s)
@@ -103,7 +117,17 @@ def test_normal():
 	l = Loading(st, {st['E']: [0, -1000]})
 	show_cost(l)
 
-	display(l)
+	def setup(ax):
+		import matplotlib.ticker as plticker
+		ax.xaxis.set_major_locator(plticker.MultipleLocator(base=200))
+		ax.yaxis.set_major_locator(plticker.MultipleLocator(base=200))
+		ax.xaxis.set_minor_locator(plticker.MultipleLocator(base=50))
+		ax.yaxis.set_minor_locator(plticker.MultipleLocator(base=50))
+		ax.grid(which='minor')
+
+	ax = display(l, w=16, h=6, setup=setup).axis
+	ax.figure.tight_layout(pad=0)
+	ax.figure.savefig('tensions.png',dpi=300)
 
 
 def test_normal3D():
