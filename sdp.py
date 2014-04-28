@@ -74,26 +74,6 @@ def get_cost(loading):
 
 	return c_cost
 
-def test_simple():
-	a = Mount("A", [0,  0])
-	b = Mount("B", [0,  10])
-	c = Joint("C", [10,  0])
-	d = Joint("D", [20,  10])
-	e = Joint("E", [30,  0])
-
-	ac = Beam(a, c)
-	bc = Beam(b, c)
-	bd = Beam(b, d)
-	cd = Beam(c, d)
-	ce = Beam(c, e)
-	de = Beam(d, e)
-
-	st = Truss(a)
-	display(st)
-
-	s = Loading(st, {e: [0, -10]})
-	display(s)
-
 def make_half():
 	a = Mount('A', np.array([   0.,    0.]))
 	b = Mount('B', np.array([   0.,  254.]))
