@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as pyplot
 import numpy as np
 
 from Polygon import Polygon
@@ -6,11 +6,16 @@ from Polygon.Shapes import Rectangle
 
 import sections
 
-def plot_modes():
-	fig = plt.figure(figsize=np.array([8, 8])/2.54)
+def make_plot(w, h):
+	fig = pyplot.figure(figsize=np.array([w, h])/2.54, dpi=100)
 	fig.figurePatch.set_alpha(0)
-	ax1 = fig.add_subplot(1, 1, 1, axisbg='white')
-	ax1.tick_params(axis='both', labelsize=8)
+	plot = fig.add_subplot(1, 1, 1, axisbg='white')
+	plot.tick_params(axis='both', labelsize=8)
+
+	return plot
+
+def plot_modes():
+	plt = make_plot(8, 8)
 
 	for mname, mode in sections.modes.iteritems():
 		l_over_bs, stresses = zip(*mode)
@@ -22,11 +27,11 @@ def plot_modes():
 		elif mname == 'C':
 			c = [0.4, 0.4, 0.4]
 
-		ax1.plot(l_over_bs, stresses, color=np.clip(c, 0, 1))
+		plt.plot(l_over_bs, stresses, color=np.clip(c, 0, 1))
 
 		x, y = l_over_bs[3], stresses[3]
 
-		ax1.annotate(
+		plt.annotate(
 			mname,
 			xy=(x,y),
 			xytext=(2, 0),
@@ -37,32 +42,28 @@ def plot_modes():
 			fontsize=8
 		)
 
-	ax1.grid()
+	plt.grid()
+	plt.set_xlabel('$L / b$')
+	plt.set_ylabel('Stress / $\mathrm{N}\mathrm{mm}^{-2}$')
 
-	ax1.set_xlabel('$L / b$')
-	ax1.set_ylabel('stress / $\mathrm{N}\mathrm{mm}^{-2}$')
+	plt.figure.tight_layout(pad=0)
 
-	fig.tight_layout()
+	plt.figure.savefig('sections-raw.png',dpi=300)
+	plt.figure.show()
 
-	fig.savefig('sections-raw.png',dpi=300)
-	fig.show()
-
-def plot():
-	fig = plt.figure(figsize=np.array([16, 8])/2.54,dpi=100)
-	fig.figurePatch.set_alpha(0)
-	ax1 = fig.add_subplot(1, 1, 1, axisbg='white')
-	ax1.tick_params(axis='both', labelsize=8)
+def plot_lines():
+	plt = make_plot(16, 8)
 
 	for name, g in sections.beam_graphs.iteritems():
 		if 'C' in name:
 			continue
 
-		ax1.plot(g['lengths'], g['forces'], color=g['color'])
+		plt.plot(g['lengths'], g['forces'], color=g['color'])
 
 		x, y = g['lengths'][-1], g['forces'][-1]
 
 
-		ax1.annotate(
+		plt.annotate(
 			name,
 			xy=(x,y),
 			xytext=(
@@ -76,17 +77,48 @@ def plot():
 			fontsize=8
 		)
 
-	ax1.grid()
+	plt.grid()
 
-	ax1.axis([0, 39 * 22, 0, 5000])
-	ax1.set_xlabel('Length / $\mathrm{mm}$')
-	ax1.set_ylabel('Compression / $\mathrm{N}$')
+	plt.axis([0, 39 * 22, 0, 5000])
+	plt.set_xlabel('Length / $\mathrm{mm}$')
+	plt.set_ylabel('Compression / $\mathrm{kN}$')
 
-	fig.tight_layout()
+	plt.figure.tight_layout(pad=0)
+	plt.figure.savefig('sections.png', dpi=300)
+	plt.figure.show()
 
-	fig.savefig('sections.png', dpi=300)
 
-	fig.show()
+def plot_1_line():
+	plt = make_plot(8, 8)
+
+	for name, g in sections.beam_graphs.iteritems():
+		if '1' not in name:
+			continue
+
+		plt.plot(g['lengths'], g['forces'], color=g['color'])
+
+		x, y = g['lengths'][3], g['forces'][3]
+
+
+		plt.annotate(
+			name,
+			xy=(x,y),
+			xytext=(2, 0),
+			textcoords='offset points',
+			color=g['color'],
+			va='bottom',
+			ha='left',
+			fontsize=8
+		)
+
+	plt.grid()
+
+	plt.set_xlabel('Length / $\mathrm{mm}$')
+	plt.set_ylabel('Compression / $\mathrm{N}$')
+
+	plt.figure.tight_layout(pad=0)
+	plt.figure.savefig('sections-1.png', dpi=300)
+	plt.figure.show()
 
 def to_poly(graph):
 	return Polygon(zip(graph['lengths'], graph['forces']) + [(0, 0)])
@@ -97,10 +129,7 @@ def to_coords(poly):
 
 
 def plot_areas(alpha=0.25):
-	fig = plt.figure(figsize=np.array([16, 8])/2.54,dpi=100)
-	fig.figurePatch.set_alpha(0)
-	ax1 = fig.add_subplot(1, 1, 1, axisbg='white')
-	ax1.tick_params(axis='both', labelsize=8)
+	plt = make_plot(16, 8)
 
 	order = '1A, 2A, 3A, 1B, 4A, 5A, 2B, 3B, 4B, 6A, 5B, 6B'.split(', ')
 	skip = Polygon()
@@ -114,11 +143,11 @@ def plot_areas(alpha=0.25):
 
 		if diff:
 			for c in diff:
-				ax1.fill(
+				plt.fill(
 					*zip(*c),
 					color=b['color'], alpha=alpha)
 
-			ax1.annotate(
+			plt.annotate(
 				n,
 				xy=diff.center(),
 				textcoords='offset points',
@@ -131,32 +160,51 @@ def plot_areas(alpha=0.25):
 			skip += p
 
 
-	ax1.grid()
+	plt.grid()
 
-	ax1.axis([0, 39 * 22, 0, 5000])
-	ax1.set_xlabel('Length / $\mathrm{mm}$')
-	ax1.set_ylabel('Compression / $\mathrm{N}$')
+	plt.axis([0, 39 * 22, 0, 5000])
+	plt.set_xlabel('Length / $\mathrm{mm}$')
+	plt.set_ylabel('Compression / $\mathrm{N}$')
 
-	fig.tight_layout()
+	plt.figure.tight_layout(pad=0)
+	plt.figure.savefig('areas.png', dpi=300)
+	plt.figure.show()
 
-	fig.savefig('areas.png', dpi=300)
+	return plt
 
-	fig.show()
+def plot_stupid_areas(alpha=0.25):
+	plt = make_plot(16, 8)
+	bounds = Rectangle(39 * 22, 3000)
+	plt.grid()
 
-	return ax1
+	plt.axis([0, 39 * 22, 0, 3000])
+	plt.set_xlabel('Length / $\mathrm{mm}$')
+	plt.set_ylabel('Tension / $\mathrm{N}$')
+
+	plt.fill(
+		*zip(*bounds[0]),
+		color=sections.beam_graphs['1A']['color'], alpha=alpha)
+	plt.annotate(
+		'1A',
+		xy=bounds.center(),
+		textcoords='offset points',
+		xytext=(0, 0),
+		color=sections.beam_graphs['1A']['color'] * 0.5,
+		va='bottom',
+		ha='center',
+		fontsize=8
+	)
+
+	plt.figure.tight_layout(pad=0)
+	plt.figure.show()
+
+	return plt
+
 
 if __name__ == '__main__':
-	D = 3.2
-	yield_stress = 255
-	for name, beam in sorted(sections.beams.iteritems()):
-
-		effective_area = beam.area - D*beam.t - 0.5 * beam.b * beam.t
-		t_max = effective_area * yield_stress
-
-		print name, t_max
-
 	plot_modes()
-	plot()
+	plot_1_line()
+	plot_lines()
 	plot_areas()
 
-	plt.show()
+	pyplot.show()
