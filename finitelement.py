@@ -179,6 +179,60 @@ def test_normal3D():
 	display(l)
 
 
+
+def test_basic3D():
+	new_x = 815 / math.sqrt(407**2 + 815**2)
+	new_z = 407 / math.sqrt(407**2 + 815**2)
+
+	st = make_half()
+
+	matrix = np.array([
+		[new_x,  0],
+		[new_z,  0],
+		[0,      1]
+	])
+
+	a_pos = np.dot(matrix, st['A'].pos)
+	b_pos = np.dot(matrix, st['B'].pos)
+	e_pos = np.dot(matrix, st['E'].pos)
+
+	y_offset = np.array([0, 57.5, 0])
+	z_offset = np.array([0, 0, -57.5])
+
+	a = Mount("A", a_pos + y_offset)
+	b = Mount("B", b_pos + y_offset)
+	e = Joint("E", e_pos + y_offset)
+
+	a_ = Mount("A'", a_pos - y_offset)
+	b_ = Mount("B'", b_pos - y_offset)
+	e_ = Joint("E'", e_pos - y_offset)
+
+	f = Joint("F", e_pos + z_offset)
+
+	Beam(e, e_)
+
+	Beam(e, f)
+	Beam(e_, f)
+
+	Beam(a, e)
+	Beam(b, e)
+	Beam(a_, e_)
+	Beam(b_, e_)
+
+	Beam(b, e_)
+
+	st = Truss(a)
+	display(st)
+
+	from pprint import pprint
+	for b in st.beams:
+		print b, b.length
+
+
+	l = Loading(st, {f: [0, 0, -2000]})
+	show_cost(l)
+	display(l)
+
 def test_ridiculous3D():
 	a = Mount("A", [0,    80, 0])
 	a_ = Mount("A'", [0,   -80, 0])
